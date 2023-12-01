@@ -1,15 +1,11 @@
 import sys
-n = int(input())
 
-numbers = list(map(int, sys.stdin.readline().rstrip().split()))
 
-numset = set(numbers)
-a = list(numset)
-a.sort()
+N = int(sys.stdin.readline())
+line_words = list(map(int, sys.stdin.readline().rstrip().split(" ")))
+sorted_word = sorted(list(set(line_words)))
 
-numdict = {}
-for i in range(len(a)):
-    numdict[a[i]] = i
+dic = {sorted_word[i] :i for i in range(len(sorted_word))}
 
-for i in numbers:
-    print(numdict[i], end=' ')
+for i in line_words:
+    print(dic[i], end=" ")
