@@ -4,8 +4,6 @@ cities = int(sys.stdin.readline())
 lengths = list(map(int, sys.stdin.readline().split(" ")))
 costs = list(map(int, sys.stdin.readline().split(" ")))
 
-if cities == 0 or cities > 1000:
-    exit()
 
 min_cost = costs[0]
 length = 0
