@@ -1,28 +1,33 @@
 public class Main {
     static int MAX = 10000;
-    public static int selfNum(int num){
+
+    public static int selfNum(int num) {
         int answer = num;
         String[] addNums = String.valueOf(num).split("");
 
-        for (String addNum : addNums){
+        for (String addNum : addNums) {
             answer += Integer.valueOf(addNum);
         }
 
         return answer;
     }
-    public static void main(String[] args){
-        int[] answer = new int[MAX+1];
-        for(int index=1; index<=MAX; index++){
+
+    public static void main(String[] args) {
+        int[] answer = new int[MAX + 1];
+        for (int index = 1; index <= MAX; index++) {
             int result = selfNum(index);
-            if(result <= MAX){
-                answer[result]=1;
+            if (result <= MAX) {
+                answer[result] = 1;
             }
         }
 
-        for(int index=1; index<=MAX; index++){
-            if(answer[index] != 1){
-                System.out.println(index);
+        StringBuilder sb = new StringBuilder();
+
+        for (int index = 1; index <= MAX; index++) {
+            if (answer[index] != 1) {
+                sb.append(index).append('\n');
             }
         }
+        System.out.println(sb);
     }
 }
