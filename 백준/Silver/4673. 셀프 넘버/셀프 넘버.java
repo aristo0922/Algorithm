@@ -3,10 +3,10 @@ public class Main {
 
     public static int selfNum(int num) {
         int answer = num;
-        String[] addNums = String.valueOf(num).split("");
 
-        for (String addNum : addNums) {
-            answer += Integer.valueOf(addNum);
+        while(num>0){
+            answer += num%10;
+            num= num/10;
         }
 
         return answer;
