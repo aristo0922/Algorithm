@@ -1,44 +1,37 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 
-// https://www.acmicpc.net/problem/2003
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader bf =new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(bf.readLine());
+    public static void main(String[] args)throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] values = br.readLine().split(" ");
+        int N = Integer.parseInt(values[0]);
+        int M = Integer.parseInt(values[1]);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int[] nums = new int[N];
 
-        int N = Integer.parseInt(st.nextToken());// ㅂㅐ열의 길이
-        int M = Integer.parseInt(st.nextToken());// 합이 M이 되는 경우의 수
-
-        int A[] = new int[N+1];
-        int result =0;
-
-        st = new StringTokenizer(bf.readLine());
-
-        for (int i =0 ;i<N ; i++){
-            A[i]=Integer.parseInt(st.nextToken());
+        for(int i =0;i<N;i++){
+            nums[i] = Integer.parseInt(st.nextToken());
         }
-
-        int start_index=0;
-        int end_index=0;
-        int sum=A[0];
-        while(end_index<N){
-            if(sum==M){
-                result++;
-                sum+=A[++end_index];
-            }else if (sum<M){
-                sum+=A[++end_index];
-            }else{
-                sum-=A[start_index++];
+        int answer = 0;
+        int start = 0 , end=0;
+        int sum = 0;
+        while(end < N){
+            if(sum < M){
+                sum += nums[end++];
+            }
+            if(sum > M){
+                sum -= nums[start++];
+            }
+            if(sum == M){
+                answer +=1;
+                sum -= nums[start++];
             }
         }
 
-        System.out.println(result);
-        bf.close();
+        System.out.println(answer);
 
-
+        br.close();
     }
 }
