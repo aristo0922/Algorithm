@@ -11,17 +11,12 @@ public class Main {
         List<Integer> points = Arrays.stream(br.readLine().split(" "))
                 .map(Integer::parseInt)
                 .collect(Collectors.toList());
-
-        List<Integer> sorted = points.stream()
-                .sorted()
-                .distinct()
-                .collect(Collectors.toList());
-
         Map<Integer, Integer> set = new HashMap<>();
 
-        for(int node:sorted){
-            set.put(node, set.size());
-        }
+        points.stream()
+                .sorted()
+                .distinct()
+                .forEach(point -> set.put(point, set.size()));
 
         for(int i=0;i<tryNum;i++){
             bw.write(set.get(points.get(i))+ " ");
