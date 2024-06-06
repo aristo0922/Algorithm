@@ -1,116 +1,85 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, M, H;
-    static int[][][] box;
+    public static class Point {
+        int height;
+        int row;
+        int col;
 
-    static Queue<Integer> toClearX;
-    static Queue<Integer> toClearY;
-    static Queue<Integer> toClearH;
-    static Queue<Integer> nextClearX = new ArrayDeque<>();
-    static Queue<Integer> nextClearY = new ArrayDeque<>();
-    static Queue<Integer> nextClearH = new ArrayDeque<>();
-    static int unClear = 0;
-    static int dates = -1; // 첫째날부터 카운팅 하기 위해
+        public Point(int h, int r, int c) {
+            this.height = h;
+            this.row = r;
+            this.col = c;
+        }
+    }
+
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    static int rowArr[] = {0, 0, 0, 0, 1, -1};
+    static int colArr[] = {0, 0, 1, -1, 0, 0};
+    static int heightArr[] = {1, -1, 0, 0, 0, 0};
+    static int m, n, h;
+    static int arr[][][];
+    static Queue<Point> queue = new LinkedList<>();
 
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        H = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(st.nextToken());
+        h = Integer.parseInt(st.nextToken());
 
+        arr = new int[h + 1][n + 1][m + 1];
 
-        box = new int[M][N][H];
-        toClearX = new ArrayDeque<>();
-        toClearY = new ArrayDeque<>();
-        toClearH = new ArrayDeque<>();
-        for (int height = 0; height < H; height++) {
-            for (int i = 0; i < M; i++) {
+        for (int i = 1; i <= h; i++) {
+            for (int j = 1; j <= n; j++) {
                 st = new StringTokenizer(br.readLine());
-                for (int j = 0; j < N; j++) {
-                    int node = Integer.parseInt(st.nextToken());
-                    box[i][j][height] = node;
-                    if (node == 0) unClear++;
-                    if (node == 1) {
-                        toClearX.add(i);
-                        toClearY.add(j);
-                        toClearH.add(height);
-                    }
+                for (int k = 1; k <= m; k++) {
+                    arr[i][j][k] = Integer.parseInt(st.nextToken());
+                    if (arr[i][j][k] == 1) queue.add(new Point(i, j, k));
                 }
             }
         }
-
-        if (unClear == 0) {
-            System.out.println(0);
-            return;
-        }
-
-        do {
-            // 바꿀 때마다 unClear --;
-            nextClearX = new ArrayDeque<>();
-            nextClearY = new ArrayDeque<>();
-            nextClearH = new ArrayDeque<>();
-
-            while (toClearX.size() != 0) {
-                int x = toClearX.poll();
-                int y = toClearY.poll();
-                int h = toClearH.poll();
-//                if (box[x][y][h] == 2)
-//                    continue;
-                if(toClearX.size()==0)
-                    dates++;
-                BFS(x, y, h);
-            }
-            toClearX = nextClearX;
-            toClearY = nextClearY;
-            toClearH = nextClearH;
-        } while (nextClearX.size() != 0);
-
-        if (unClear > 0) {
-            System.out.println(-1);
-            return;
-        }
-        System.out.println(dates-1);
+        System.out.println(bfs());
     }
 
-    public static boolean validIndex(int x, int y, int h) {
-        if (x < 0 || y < 0 || h < 0 || h >= H || x >= M || y >= N) return false;//상자 밖
-        return true;
-    }
+    public static int bfs() {
+        while (!queue.isEmpty()) {
+            Point point = queue.poll();
+            int height = point.height;
+            int col = point.col;
+            int row = point.row;
 
-    static int[] dx = {0, 0, 1, -1, 0, 0};
-    static int[] dy = {1, -1, 0, 0, 0, 0};
-    static int[] dh = {0, 0, 0, 0, 1, -1};
+            for (int i = 0; i < 6; i++) {
+                int nh = height + heightArr[i];
+                int ncol = col + colArr[i];
+                int nrow = row + rowArr[i];
 
-    public static void addNext(int x, int y, int h) {
-        if (box[x][y][h] == -1)
-            return;
-        if (box[x][y][h] == 2)
-            return;
-        for (int i = 0; i < 6; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            int nh = h + dh[i];
-            if (validIndex(nx, ny, nh)) {
-                nextClearX.add(nx);
-                nextClearY.add(ny);
-                nextClearH.add(nh);
+                if (checkPoint(nh, nrow, ncol)) {
+                    queue.add(new Point(nh, nrow, ncol));
+                    arr[nh][nrow][ncol] = arr[height][row][col] + 1;
+                }
             }
         }
+        int result = Integer.MIN_VALUE;
+
+        for (int i = 1; i <= h; i++) {
+            for (int j = 1; j <= n; j++) {
+                for (int k = 1; k <= m; k++) {
+                    if (arr[i][j][k] == 0) return -1;
+                    result = Math.max(result, arr[i][j][k]);
+                }
+            }
+        }
+        if (result == 1) return 0;
+        else return (result - 1);
     }
 
-    public static void BFS(int x, int y, int h) {
-        if (box[x][y][h] == -1)
-            return;
-        if (box[x][y][h] == 0)
-            unClear--;
-        addNext(x, y, h);
-        box[x][y][h] = 2;
+    private static boolean checkPoint(int height, int row, int col) {
+        if (height < 1 || height > h || row < 1 || row > n || col < 1 || col > m) return false;
+        if (arr[height][row][col] == 0) return true;
+        return false;
     }
 }
