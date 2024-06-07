@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
@@ -37,20 +35,21 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < size; j++) {
                 table[i][j] = Integer.parseInt(st.nextToken());
-                if (LIMIT < table[i][j])
-                    LIMIT = table[i][j];
+                LIMIT = Math.max(LIMIT, table[i][j]);
             }
         }
 
         //search
         for (int limit = 0; limit <= LIMIT; limit++) {
             manage(limit);
-            if (answer < count) answer = count;
+            answer = Math.max(answer, count);
             count = 0;
             visited = new boolean[size][size];
         }
 
-        System.out.println(answer);
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        bw.write(""+answer);
+        bw.flush();
     }
 
     public static void manage(int limit) {
