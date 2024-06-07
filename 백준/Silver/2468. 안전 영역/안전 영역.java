@@ -1,23 +1,26 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
+    static int size;
     static int[][] table;
-    static int[][] tableCopy;
-    static Queue<Locate> nextVisite = new LinkedList<>();
-    static int size = 0;
+    static boolean[][] visited;
+    static int[] dx = {0, 0, 1, -1};
+    static int[] dy = {1, -1, 0, 0};
+    static int LIMIT = Integer.MIN_VALUE;
     static int answer = Integer.MIN_VALUE;
     static int count = 0;
-    static int MAX = Integer.MIN_VALUE;
 
-    public static class Locate {
+    static Deque<Node> queue = new LinkedList<>();
+
+    public static class Node {
         int x, y;
 
-        public Locate(int x, int y) {
+        public Node(int x, int y) {
             this.x = x;
             this.y = y;
         }
@@ -26,44 +29,34 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         size = Integer.parseInt(br.readLine());
+        StringTokenizer st;
         table = new int[size][size];
-
+        visited = new boolean[size][size];
+// init
         for (int i = 0; i < size; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(br.readLine());
             for (int j = 0; j < size; j++) {
                 table[i][j] = Integer.parseInt(st.nextToken());
-                if (MAX < table[i][j])
-                    MAX = table[i][j];
+                if (LIMIT < table[i][j])
+                    LIMIT = table[i][j];
             }
         }
 
-        for (int limit = 0; limit <= MAX; limit++) {
-            DeepCopy();
-            count = 0;
+        //search
+        for (int limit = 0; limit <= LIMIT; limit++) {
             manage(limit);
-            if (count > answer) answer = count;
+            if (answer < count) answer = count;
+            count = 0;
+            visited = new boolean[size][size];
         }
 
         System.out.println(answer);
     }
 
-    static int[] dx = {0, 0, 1, -1};
-    static int[] dy = {1, -1, 0, 0};
-
-    static void DeepCopy() {
-        tableCopy = new int[size][size];
+    public static void manage(int limit) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                tableCopy[i][j] = table[i][j];
-            }
-        }
-    }
-
-    static void manage(int limit) {
-        count=0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (tableCopy[i][j] <= limit || tableCopy[i][j] == -1) continue;
+                if (table[i][j] <= limit || visited[i][j] == true) continue;
                 DFS(i, j, limit);
                 count++;
             }
@@ -71,17 +64,23 @@ public class Main {
     }
 
     public static void DFS(int x, int y, int limit) {
-        if (tableCopy[x][y] <= limit || tableCopy[x][y] == -1) return;
-        tableCopy[x][y] = -1;
+        if (table[x][y] <= limit || visited[x][y] == true) return;
+        visited[x][y] = true;
+
+        // 다음 노드 탐색
         for (int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
-            if (nx < 0 || ny < 0 || size <= nx || size <= ny) continue;
-            nextVisite.add(new Locate(nx, ny));
+            if (nx < 0 || ny < 0 || nx >= size || ny >= size) continue;
+            queue.add(new Node(nx, ny));
         }
-        while (nextVisite.size() > 0) {
-            Locate node = nextVisite.poll();
+
+//        재귀
+        while (queue.size() > 0) {
+            Node node = queue.pollFirst();
             DFS(node.x, node.y, limit);
         }
     }
+
+
 }
