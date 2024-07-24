@@ -3,58 +3,70 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.StringWriter;
 
 public class Main {
 
-  private static int[][] paper;
-  private static int size;
-  private static int white = 0, blue = 0;
+  static int[][] paper;
+  static int size;
+  static int white = 0, blue = 0;
 
   public static void main(String[] args) throws IOException {
     init();
-
-    partitions(0, 0, size);
+    segmentation(0, 0, size);
     BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
     bw.write(white + "\n" + blue);
     bw.flush();
   }
 
-  public static int partitions(int row, int col, int size) {
-    if (checkColor(row, col, size)) {
-      if (paper[row][col] == 0) {
-        return white++;
-      }
-      return blue++;
+  public static boolean isSame(int low, int col, int color) {
+    if (paper[low][col] == color) {
+      return true;
     }
-    int newSize = size / 2;
-    partitions(row, col, newSize);
-    partitions(row, col + newSize, newSize);
-    partitions(row + newSize, col, newSize);
-    return partitions(row + newSize, col + newSize, newSize);
+    return false;
   }
 
-  public static boolean checkColor(int row, int col, int size) {
-    int color = paper[row][col];
-    for (int i = row; i < row + size; i++) {
+  public static boolean isPaper(int low, int col, int size) {
+    int color = paper[low][col];
+    for (int i = low; i < low + size; i++) {
       for (int j = col; j < col + size; j++) {
-        if (paper[i][j] != color) {
+        if (color != paper[i][j]) {
           return false;
         }
       }
     }
+
     return true;
+  }
+
+  // true: 1-blue, false: 0-white
+  public static void segmentation(int low, int col, int size) {
+    if (isPaper(low, col, size) != true) {
+      int newSize = size / 2;
+      segmentation(low, col, newSize);
+      segmentation(low + newSize, col, newSize);
+      segmentation(low, col + newSize, newSize);
+      segmentation(low + newSize, col + newSize, newSize);
+      return;
+    }
+    if (paper[low][col] == 1) {
+      blue++;
+    }
+    if (paper[low][col] == 0) {
+      white++;
+    }
+
   }
 
   public static void init() throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     size = Integer.parseInt(br.readLine());
     paper = new int[size][size];
+
     for (int i = 0; i < size; i++) {
-      String[] colors = br.readLine().split(" ");
+      String[] nodes = br.readLine().split(" ");
       for (int j = 0; j < size; j++) {
-        paper[i][j] = Integer.parseInt(colors[j]);
+        paper[i][j] = Integer.parseInt(nodes[j]);
       }
     }
   }
