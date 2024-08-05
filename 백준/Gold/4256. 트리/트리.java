@@ -1,60 +1,53 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Main {
 
   static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-  static int length;
-  static int[] preArr, inArr;
+  static int[] pre;
+  static int[] in;
+  static int size;
   static StringBuilder sb = new StringBuilder();
 
   public static void main(String[] args) throws IOException {
-    int tCase = Integer.parseInt(br.readLine());
-    for (int i = 0; i < tCase; i++) {
-      length = Integer.parseInt(br.readLine());
-      setArrs(length);
+    int games = Integer.parseInt(br.readLine());
 
-      findPostArr(0, 0, length);
+    for (int i = 0; i < games; i++) {
+      size = Integer.parseInt(br.readLine());
+      setArr(size);
+      findPostOrder(0, 0, size-1);
       sb.append("\n");
     }
+
     System.out.println(sb.toString());
   }
 
-  public static void findPostArr(int preRootIdx, int beginIn, int end) {
-    if (preRootIdx >= length) {
-      return;
-    }
-    int rootValue = preArr[preRootIdx];
-//    int index=beginIn;
-
-    for (int index = beginIn; index < end; index++) {
-      if (rootValue == inArr[index]) {
-        findPostArr(preRootIdx + 1, beginIn, index);
-        findPostArr(preRootIdx + index + 1 - beginIn, index + 1, end);
-        sb.append(rootValue + " ");
+  public static void findPostOrder(int rIndex, int begin, int end) {
+    if(rIndex>=size) return;
+    int root = pre[rIndex];
+    for (int i = begin; i <= end; i++) {
+      if (root == in[i]) {
+        findPostOrder(rIndex + 1, begin, i-1 );
+        findPostOrder(rIndex + 1 + i - begin, i+1, end);
+        sb.append(root + " ");
         return;
       }
     }
-
-//    while(rootValue!= inArr[index]) index++;
-//    findPostArr(preRootIdx+1, beginIn, index);
-//    findPostArr(preRootIdx+index+1-beginIn, index+1, end);
-//    sb.append(rootValue + " ");
   }
 
-  public static void setArrs(int length) throws IOException {
-    preArr = new int[length];
-    inArr = new int[length];
+  public static void setArr(int size) throws IOException {
+    pre = new int[size];
+    in = new int[size];
 
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    for (int i = 0; i < length; i++) {
-      preArr[i] = Integer.parseInt(st.nextToken());
+    String[] inputs = br.readLine().split(" ");
+    for (int i = 0; i < size; i++) {
+      pre[i] = Integer.parseInt(inputs[i]);
     }
-    st = new StringTokenizer(br.readLine());
-    for (int i = 0; i < length; i++) {
-      inArr[i] = Integer.parseInt(st.nextToken());
+    inputs = br.readLine().split(" ");
+    for (int i = 0; i < size; i++) {
+      in[i] = Integer.parseInt(inputs[i]);
     }
   }
+
 }
