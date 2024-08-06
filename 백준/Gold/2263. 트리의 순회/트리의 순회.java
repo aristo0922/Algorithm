@@ -1,48 +1,43 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.StringTokenizer;
+import java.util.function.BinaryOperator;
 
 public class Main {
 
   static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-  static BufferedWriter sb = new BufferedWriter(new OutputStreamWriter(System.out));
   static int[] inOrder, postOrder;
-  static int  size;
+  static int size;
+  static StringBuilder sb = new StringBuilder();
 
   public static void main(String[] args) throws IOException {
-    size = Integer.parseInt(br.readLine());
-    set(size);
-
-    findPreOrders(0,size - 1, 0, size - 1);
-    sb.flush();
+    set();
+    findPreOrder(0, size - 1, 0, size - 1);
+    System.out.println(sb.toString());
   }
 
-  public static void findPreOrders(int inStart, int inEnd, int postStart, int postEnd)
-      throws IOException {
-    if(inStart > inEnd || postStart > postEnd || inEnd <0 || postEnd < 0 || postStart < 0) return;
-    if(inEnd>=size || postEnd >= size) return;
+  public static void findPreOrder(int inStart, int inEnd, int postStart, int postEnd) {
+    if (inStart > inEnd || postStart > postEnd) {
+      return;
+    }
     int root = postOrder[postEnd];
-
-    int index=0;
-
-    for (int i = 0; i <= inEnd; i++) {
-      if(inOrder[i] == root){
-        index= i;
+    sb.append(root).append(" ");
+    int index = 0;
+    while (index < inEnd) {
+      if (inOrder[index] == root) {
         break;
       }
+      index++;
     }
-
-    sb.write(root + " ");
-
-    int leftSize = index - inStart;
-    findPreOrders(inStart, index - 1, postStart, postStart + leftSize - 1);
-    findPreOrders(index + 1, inEnd, postStart + leftSize, postEnd - 1);
+    int length = index - inStart;
+    findPreOrder(inStart, index - 1, postStart, postStart + length - 1);
+    findPreOrder(index + 1, inEnd, postStart+length, postEnd - 1);
   }
 
-  public static void set(int size) throws IOException {
+  public static void set() throws IOException {
+    size = Integer.parseInt(br.readLine());
+
     inOrder = new int[size];
     postOrder = new int[size];
 
