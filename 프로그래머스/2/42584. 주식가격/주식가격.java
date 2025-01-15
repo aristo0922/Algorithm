@@ -1,27 +1,37 @@
-import java.util.Stack;
-
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 class Solution {
-    
-  public int[] solution(int[] prices){
-    int len = prices.length;
-    int[] ans = new int [len];
-    Stack<Integer> stack = new Stack<>();
+  public int[] solution(int[] prices) {
+    int priceLen = prices.length;
+    int[] answer = new int[priceLen];
+    Queue<Integer> stocks = init(prices);
 
-    for (int i = 0; i< len; i++){
-      while(!stack.isEmpty() && prices[i] < prices[stack.peek()]){
-        int idx = stack.pop();
-        ans[idx] = i - idx;
+    while (stocks.isEmpty() != true) {
+      int node = stocks.poll();
+      int count = 0;
+      if(stocks.size() == 0) break;
+      for (int i = priceLen - stocks.size(); i < priceLen; i++) {
+        count++;
+        if (node > prices[i]) {
+          answer[priceLen - stocks.size() - 1] = count;
+          break;
+        }
       }
-      stack.push(i);
+
+      answer[priceLen - stocks.size() - 1] = count;
     }
 
-    while(!stack.isEmpty()){
-      int idx = stack.pop();
-      ans[idx] = len -1 -idx;
-    }
+    return answer;
+  }
 
-    return ans;
+  public Queue<Integer> init(int[] prices) {
+    Queue<Integer> stocks = new ArrayDeque<>();
+
+    for (int price : prices) {
+      stocks.add(price);
+    }
+    return stocks;
   }
 
 }
